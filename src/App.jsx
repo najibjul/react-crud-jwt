@@ -1,0 +1,25 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './auths/AuthContext';
+import Login from './views/Login';
+import PostIndex from './views/posts/Index';
+import PostCreate from './views/posts/Create';
+import ProtectedRoute from './auths/ProtectedRoute';
+
+const App = () => {
+    return (
+        <AuthProvider>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<Login />} />
+
+                    <Route path="/posts" element={<ProtectedRoute element={<PostIndex />} />} />
+                    <Route path="/posts/create" element={<ProtectedRoute element={<PostCreate />} />} />
+                    
+                </Routes>
+            </Router>
+        </AuthProvider>
+    );
+};
+
+export default App;
