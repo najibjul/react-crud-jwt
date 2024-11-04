@@ -1,9 +1,11 @@
 import axios from "axios"
-import { useRef, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useEffect, useRef, useState } from "react"
+import { Link,  useNavigate } from "react-router-dom"
+import SuccessAlert from "./components/SuccessAlert"
 
 function Login() {
     const [email, setEmail] = useState('')
+    const [successMessage, setSuccessMessage] = useState('')
     const [password, setPassword] = useState('')
 
     const [errors, setErrors] = useState([])
@@ -13,6 +15,15 @@ function Login() {
     const  emailRef = useRef(null)
     const  passwordRef = useRef(null)
 
+    useEffect(() => {
+        
+        const sessionSuccess = sessionStorage.getItem('successMessage')
+
+        if(sessionSuccess){            
+            setSuccessMessage(sessionSuccess)
+            sessionStorage.removeItem('successMessage')
+        }
+    })
     
     const loginPost = async (e) => {
         e.preventDefault()
@@ -59,16 +70,16 @@ function Login() {
                             <div className="card-body">
                                 <div className="mb-3">
                                     <label htmlFor="email">Email</label>
-                                    <input onChange={(e) => setEmail(e.target.value)} type="email" id="email" className={`form-control ${errors.email && ( 'is-invalid' )}`} autoFocus placeholder="your.mail@example.com" ref={emailRef} value={email} />
+                                    <input onChange={(e) => setEmail(e.target.value)} type="email" id="email" className={`form-control ${errors.email ? 'is-invalid' : ''}`} autoFocus placeholder="your.mail@example.com" ref={emailRef} value={email} />
                                     {
                                         errors.email && (
                                             <div className="alert alert-danger mt-2">{errors.email[0]}</div>
                                         )
                                     }
                                 </div>
-                                <div className="mb-5">
+                                <div className="mb-3">
                                     <label htmlFor="password">Password</label>
-                                    <input onChange={(e) => setPassword(e.target.value)} type="password" id="password" className={`form-control ${errors.password && ( 'is-invalid' )}`} placeholder="•••••••" ref={passwordRef} value={password} />
+                                    <input onChange={(e) => setPassword(e.target.value)} type="password" id="password" className={`form-control ${errors.password ?  'is-invalid'  : ''}`} placeholder="•••••••" ref={passwordRef} value={password} />
                                     {
                                         errors.password && (
                                             <div className="alert alert-danger mt-2">{errors.password[0]}</div>
@@ -80,6 +91,10 @@ function Login() {
                                         )
                                     }
                                 </div>
+
+
+                                <SuccessAlert message={successMessage} />
+
                                 <div className="d-flex justify-content-between">
                                     <button type="submit" className="btn btn-primary">Login</button>
                                     <Link to={'/registration'} className="btn btn-success">Registration</Link>

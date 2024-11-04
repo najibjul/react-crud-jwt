@@ -2,6 +2,7 @@ import axios from "axios"
 import { useRef, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
+
 function Registration() {
 
     const [name, setName] = useState('')
@@ -30,7 +31,8 @@ function Registration() {
 
         try {
             await axios.post('http://localhost:8000/api/registration', formData)
-            .then(() => {
+            .then((response) => {
+                sessionStorage.setItem('successMessage', response.data.message)
                 navigate('/')
             })
 

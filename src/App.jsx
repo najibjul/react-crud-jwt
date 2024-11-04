@@ -5,6 +5,7 @@ import Login from './views/Login';
 import PostIndex from './views/posts/Index';
 import PostCreate from './views/posts/Create';
 import ProtectedRoute from './auths/ProtectedRoute';
+import Registration from './views/Registration';
 
 const App = () => {
     return (
@@ -12,6 +13,7 @@ const App = () => {
             <Router>
                 <Routes>
                     <Route path="/" element={<Login />} />
+                    <Route path="/registration" element={<Registration />} />
 
                     <Route path="/posts" element={<ProtectedRoute element={<PostIndex />} />} />
                     <Route path="/posts/create" element={<ProtectedRoute element={<PostCreate />} />} />

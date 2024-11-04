@@ -15,10 +15,9 @@ export default function PostIndex() {
 
     const [url, setUrl] = useState('http://localhost:8000/api/posts?page=1')
 
-    const fetchData = async ( url) => {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
+    const fetchData = async ( url) => {
         try {
             await axios.get(url).
             then((response) => {
@@ -43,7 +42,9 @@ export default function PostIndex() {
                 <div className="col-md-12">
                     <div className="card border-0 rounded shadow">
                         <div className="card-header">
-                            POSTS
+                            <h4>
+                                POSTS INDEX
+                            </h4>
                         </div>
                         <div className="card-body">
                             <div className="d-flex justify-content-end mb-2">
