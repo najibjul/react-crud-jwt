@@ -34,7 +34,7 @@ function Login() {
         formData.append('password', password)
 
         try {
-            await axios.post('http://localhost:8000/api/login', formData)
+            await axios.post('http://127.0.0.1:8000/api/login', formData)
             .then((response) => {
                 localStorage.setItem('token', response.data.token)
                 navigate('/posts')

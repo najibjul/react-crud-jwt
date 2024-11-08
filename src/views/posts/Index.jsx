@@ -1,26 +1,37 @@
 import axios from "axios"
-import { useEffect, useState } from "react"
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react"
+import { Link, useNavigate } from "react-router-dom";
+import SuccessAlert from "../components/SuccessAlert"
 
 export default function PostIndex() {
 
+    const navigate = useNavigate()
+
     const token = localStorage.getItem('token')
+
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
     const [posts, setPosts] = useState([]);
 
     const [current_page, setCurrent_page] = useState();
+
     const [per_page, setPer_page] = useState();
 
     const [links, setLinks] = useState([])
 
     const [url, setUrl] = useState('http://localhost:8000/api/posts?page=1')
 
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    const [successMessage, setSuccessMessage] = useState('')
     
-    const fetchData = async ( url) => {
+    const sectionRef = useRef(null)
+
+    const sessionSuccess = sessionStorage.getItem('successMessage')
+    
+    const fetchData = async (url) => {
         try {
             await axios.get(url).
             then((response) => {
+                
                 setCurrent_page(response.data.data.current_page)
                 setPer_page(response.data.data.per_page)
                 setPosts(response.data.data.data)
@@ -28,20 +39,51 @@ export default function PostIndex() {
             })
         } catch (error) {
             console.log(error);
-            
         }
     }
 
     useEffect(() => {
+
+        if(sessionSuccess){            
+            setSuccessMessage(sessionSuccess)
+            sessionStorage.removeItem('successMessage')
+        }
+        
         fetchData(url)
+
     },[url])
+
+    const handleUrl = (e, url) => {
+        e.preventDefault()
+        setUrl(url)
+        sectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const handleDelete = async (e, id) => {
+        e.preventDefault()
+
+        try {
+            await axios.delete(`http://127.0.0.1:8000/api/posts/${id}`).
+            then((response) => {
+                fetchData(url)
+
+                const modalElement = document.getElementById(`post${id}`);
+                const modal = bootstrap.Modal.getInstance(modalElement)
+                modal.hide(); 
+
+                setSuccessMessage(response.data.message)
+            })
+        } catch (error) {
+            console.log(error);
+        }   
+    }
 
     return (
         <div className="container mt-5 mb-5">
             <div className="row">
                 <div className="col-md-12">
                     <div className="card border-0 rounded shadow">
-                        <div className="card-header">
+                        <div className="card-header" id="header" ref={sectionRef}>
                             <h4>
                                 POSTS INDEX
                             </h4>
@@ -50,6 +92,7 @@ export default function PostIndex() {
                             <div className="d-flex justify-content-end mb-2">
                                 <Link to={"/posts/create"} className="btn btn-primary">Add data</Link>
                             </div>
+                            <SuccessAlert message={successMessage} />
                             <div className="table-responsive">
                                 <table className="table table-bordered table-hover">
                                     <thead>
@@ -67,8 +110,36 @@ export default function PostIndex() {
                                                 <th className="text-center">{(current_page - 1) * per_page + (index + 1) }</th>
                                                 <td>{post.title}</td>
                                                 <td>{post.content}</td>
-                                                <td>{post.image}</td>
-                                                <td></td>
+                                                <td><img src={post.image} alt={post.title} width="200" className='rounded' /></td>
+                                                <td>
+                                                    <div className="d-flex">
+                                                        <Link to={`/posts/${post.id}`} className="btn btn-warning">Edit</Link>
+
+                                                        <button type="button" className="btn btn-danger" data-bs-toggle="modal" data-bs-target={`#post${post.id}`}>
+                                                            Delete
+                                                        </button>
+                                                    </div>
+
+                                                    <div className="modal fade" id={`post${post.id}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                        <div className="modal-dialog">
+                                                            <div className="modal-content">
+                                                                <div className="modal-header">
+                                                                    <h5 className="modal-title" id="exampleModalLabel">Caution</h5>
+                                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div className="modal-body">
+                                                                    Delete this post?
+                                                                </div>
+                                                                <div className="modal-footer">
+                                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                    <form onSubmit={(e) => handleDelete(e, post.id)}>
+                                                                        <button type="submit" className="btn btn-danger">Yes, Delete</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -76,7 +147,9 @@ export default function PostIndex() {
                                 <nav aria-label="Page navigation example">
                                     <ul className="pagination">
                                         {links.map(link => (
-                                            <li key={link.label} className="page-item"><a className={`page-link ${link.active && ( 'active' )} ${!link.url && ( 'disabled' )}`} href="#" onClick={() => setUrl(link.url)} dangerouslySetInnerHTML={{ __html: link.label }} ></a></li>
+                                            <li key={link.label} className="page-item">
+                                                <button className={`page-link ${link.active && ( 'active' )} ${!link.url && ( 'disabled' )}`}  onClick={(e) => handleUrl(e, link.url)} dangerouslySetInnerHTML={{ __html: link.label }} ></button>
+                                            </li>
                                         ))}
                                     </ul>
                                 </nav>
@@ -88,7 +161,6 @@ export default function PostIndex() {
                                 <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} > Next </button>
                             </div> */}
 
-                            
                         </div>
                     </div>
                 </div>
