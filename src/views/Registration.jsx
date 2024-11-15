@@ -1,130 +1,170 @@
-import axios from "axios"
-import { useRef, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-
+import axios from "axios";
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ErrorMessage from "./components/ErrorMessage";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 function Registration() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password_confirmation, set_password_confirmation] = useState("");
 
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [password_confirmation, set_password_confirmation] = useState('')
-    
-    const [errors, setErrors] = useState([])
+  const [loading, setLoading] = useState(false);
 
-    const navigate = useNavigate()
+  const [errors, setErrors] = useState([]);
 
-    const  nameRef = useRef(null)
-    const  emailRef = useRef(null)
-    const  passwordRef = useRef(null)
-    const  password_confirmationRef = useRef(null)
+  const navigate = useNavigate();
 
-    const registrationPost = async (e) => {
-        e.preventDefault()
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const password_confirmationRef = useRef(null);
 
-        const formData = new FormData()
+  const registrationPost = async (e) => {
+    e.preventDefault();
 
-        formData.append('name', name)
-        formData.append('email', email)
-        formData.append('password', password)
-        formData.append('password_confirmation', password_confirmation)
+    const formData = new FormData();
 
-        try {
-            await axios.post('http://localhost:8000/api/registration', formData)
-            .then((response) => {
-                sessionStorage.setItem('successMessage', response.data.message)
-                navigate('/')
-            })
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("password_confirmation", password_confirmation);
 
-        } catch (error) {
-            setErrors(error.response.data)
-
-            if (error.response.data.name) {
-                nameRef.current.focus()
-                
-            } else if (error.response.data.email) {
-                emailRef.current.focus()
-
-            } else if (error.response.data.password) {
-                passwordRef.current.focus()
-                
-            } else if (error.response.data.password_confirmation) {
-                password_confirmationRef.current.focus()
-
-            }
-            
-            
-        }
+    try {
+      setLoading(true);
+      await axios
+        .post("http://localhost:8000/api/registration", formData)
+        .then((response) => {
+          sessionStorage.setItem("successMessage", response.data.message);
+          navigate("/");
+        });
+    } catch (error) {
+      setErrors(error.response.data);
+    } finally {
+      setLoading(false);
     }
-    
-    return (
-        <>
-            <div className="container" style={{ marginTop : '100px' , marginBottom : '100px' }}>
-                <div className="row">
-                    <div className="col-0 col-md-2 col-lg-4"></div>
-                    <div className="col-12 col-md-8 col-lg-4">
-                        <div className="card shadow">
-                            <div className="card-header">
-                                <h3>Registration</h3>
-                            </div>
-                            <form onSubmit={registrationPost}>
-                                <div className="card-body">
-                                    <div className="mb-3">
-                                        <label htmlFor="name">Name</label>
-                                        <input onChange={(e) => setName(e.target.value)} type="text" id="name" className={`form-control ${errors.name ? 'is-invalid' : ''}`} autoFocus placeholder="Type name here..." ref={nameRef} />
-                                        {
-                                            errors.name && (
-                                                <div className="alert alert-danger mt-2">
-                                                    {errors.name[0]}
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="email">Email</label>
-                                        <input onChange={(e) => setEmail(e.target.value)} type="email" id="email" className={`form-control ${errors.email ? 'is-invalid' : ''}`} placeholder="Type email here..." ref={emailRef} />
-                                        {
-                                            errors.email && (
-                                                <div className="alert alert-danger mt-2">
-                                                    {errors.email[0]}
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="password">Password</label>
-                                        <input onChange={(e) => setPassword(e.target.value)} type="password" id="password" className={`form-control ${errors.password ? 'is-invalid' : ''}`} placeholder="Type password here..." ref={passwordRef} />
-                                        {
-                                            errors.password && (
-                                                <div className="alert alert-danger mt-2">
-                                                    {errors.password[0]}
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-                                    <div className="mb-5">
-                                        <label htmlFor="confPassword">Password Confirmation</label>
-                                        <input onChange={(e) => set_password_confirmation(e.target.value)} type="password" id="confPassword" className={`form-control ${errors.password_confirmation ? 'is-invalid' : ''}`} placeholder="Type password confirmation here..." ref={password_confirmationRef}/>
-                                        {
-                                            errors.password_confirmation && (
-                                                <div className="alert alert-danger mt-2">
-                                                    {errors.password_confirmation[0]}
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-                                    <button type="submit" className="btn btn-primary w-100">Save</button>
-                                    <div className="text-center mt-4">
-                                        <Link to={'/'} >Back to Login</Link>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+  };
+
+  return (
+    <>
+      <div className="flex justify-center items-center h-screen bg-blue-100 ">
+        <div className="p-5 bg-white xl:w-1/4 lg:1/3 md:w-1/2 rounded-lg">
+          <p className="font-sans xl:text-4xl text-3xl font-semibold justify-self-center text-blue-800">
+            REGISTRATION
+          </p>
+          <hr className="my-5" />
+          <form onSubmit={registrationPost}>
+            <div className="mb-3">
+              <label
+                htmlFor="name"
+                className="lg:text-lg md:text-md text-blue-800"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                ref={nameRef}
+                className={`block w-full border ${
+                  errors.name
+                    ? "border-red-300 ring-1 ring-red-500"
+                    : "border-gray-300"
+                }  p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-700 hover:border-blue-400 hover:ring-1 transition mt-2`}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your name here"
+              />
+              <ErrorMessage message={errors.name && errors.name[0]} />
             </div>
-        </>
-    )
+            <div className="mb-3">
+              <label
+                htmlFor="email"
+                className="lg:text-lg md:text-md text-blue-800"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                ref={emailRef}
+                className={`block w-full border ${
+                  errors.email
+                    ? "border-red-300 ring-1 ring-red-500"
+                    : "border-gray-300"
+                }  p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-700 hover:border-blue-400 transition mt-2`}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email here"
+              />
+              <ErrorMessage message={errors.email && errors.email[0]} />
+            </div>
+            <div className="mb-3">
+              <label
+                htmlFor="password"
+                className="lg:text-lg md:text-md text-blue-800"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                ref={passwordRef}
+                className={`block w-full border ${
+                  errors.password
+                    ? "border-red-300 ring-1 ring-red-500"
+                    : "border-gray-300"
+                }  p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-700 hover:border-blue-400 transition mt-2`}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password here"
+              />
+              <ErrorMessage message={errors.password && errors.password[0]} />
+            </div>
+            <div className="mb-10">
+              <label
+                htmlFor="passwordConfirmation"
+                className="lg:text-lg md:text-md text-blue-800"
+              >
+                Confirmation Password
+              </label>
+              <input
+                type="password"
+                ref={password_confirmationRef}
+                className={`block w-full border ${
+                  errors.password_confirmation
+                    ? "border-red-300 ring-1 ring-red-500"
+                    : "border-gray-300"
+                }  p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-700 hover:border-blue-400 transition mt-2`}
+                onChange={(e) => set_password_confirmation(e.target.value)}
+                placeholder="Enter your confirmation password here"
+              />
+              <ErrorMessage
+                message={
+                  errors.password_confirmation &&
+                  errors.password_confirmation[0]
+                }
+              />
+            </div>
+
+            <button
+              disabled={loading && "disabled"}
+              type="submit"
+              className={`block w-full bg-blue-800 rounded-lg p-3 text-white hover:bg-blue-900 transition  ${
+                loading && "disabled:opacity-75"
+              }`}
+            >
+              {loading ? "LOADING..." : "REGISTRATION"}
+            </button>
+          </form>
+
+          <p className="mt-5 mb-5 justify-self-center">
+            <Link
+              to={"/"}
+              className="text-blue-800 underline underline-offset-5 hover:text-blue-950"
+            >
+              <FontAwesomeIcon icon={faRightFromBracket} /> Login
+            </Link>
+          </p>
+        </div>
+      </div>
+    </>
+  );
 }
 
-export default Registration
+export default Registration;
