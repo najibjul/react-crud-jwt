@@ -6,8 +6,8 @@ const ErrorMessage = ({ message }) => {
 
   return (
     <>
-        <p className="text-red-500">
-            <FontAwesomeIcon icon={faExclamationCircle} />{" "}
+        <p className="text-error">
+            <FontAwesomeIcon className="text-red-800" icon={faExclamationCircle} />{" "}
             {message}
         </p>
     </>

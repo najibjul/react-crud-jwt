@@ -6,10 +6,9 @@ const ErrorAlert = ({ message }) => {
 
   return (
     <>
-      <div className="p-3 my-2 bg-red-700 rounded">
-        <p className="text-white">
-          <FontAwesomeIcon icon={faExclamationCircle} /> {message}
-        </p>
+      <div role="alert" className="alert alert-error">
+        <FontAwesomeIcon icon={faExclamationCircle} />
+        <span>{message}</span>
       </div>
     </>
   );

@@ -7,11 +7,10 @@ const SuccessAlert = ({message}) => {
 
     return(
         <>
-        <div className="p-3 my-2 bg-green-700 rounded">
-            <p className="text-white">
-            <FontAwesomeIcon icon={faCheckCircle} /> {message}
-            </p>
-        </div>
+            <div role="alert" className="alert alert-success">
+                <FontAwesomeIcon icon={faCheckCircle} />
+                <span>{message}</span>
+            </div>
         </>
         
     )

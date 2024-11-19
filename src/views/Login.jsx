@@ -1,11 +1,13 @@
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SuccessAlert from "./components/SuccessAlert";
 import ErrorAlert from "./components/ErrorAlert";
 import ErrorMessage from "./components/ErrorMessage";
+import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function Login() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [password, setPassword] = useState("");
@@ -14,9 +16,6 @@ function Login() {
   const [errors, setErrors] = useState([]);
 
   const navigate = useNavigate();
-
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
 
   useEffect(() => {
     const sessionSuccess = sessionStorage.getItem("successMessage");
@@ -59,83 +58,35 @@ function Login() {
 
   return (
     <>
-      <div className="flex justify-center items-center h-screen bg-blue-100 px-5">
-        <div className="p-5 bg-white xl:w-1/4 lg:1/3 md:w-1/2 rounded-lg">
-          <p className="font-sans text-4xl font-semibold justify-self-center text-blue-800">
-            LOGIN
-          </p>
-          <hr className="my-5" />
-          <form onSubmit={loginPost}>
-            <div className="mb-5">
-              <label
-                htmlFor="email"
-                className="lg:text-lg md:text-md text-blue-800"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                ref={emailRef}
-                value={email}
-                className={`block w-full border ${
-                  errors.email
-                    ? "border-red-300 ring-1 ring-red-500"
-                    : "border-gray-300"
-                }  p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-700 hover:border-blue-400 hover:ring-1 transition mt-2 `}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email here"
-              />
-              <ErrorMessage message={errors.email && errors.email[0]} />
-            </div>
-            <div className="mb-8">
-              <label
-                htmlFor="password"
-                className="lg:text-lg md:text-md text-blue-800"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                ref={passwordRef}
-                value={password}
-                className={`block w-full border ${
-                  errors.password
-                    ? "border-red-300 ring-1 ring-red-500"
-                    : "border-gray-300"
-                }  p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-700 hover:border-blue-400 transition mt-2`}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password here"
-              />
-              <ErrorMessage message={errors.password && errors.password[0]} />
-
-              <SuccessAlert message={successMessage} />
-              <ErrorAlert message={errors.error} />
-            </div>
-
-            <button
-              disabled={loading && "disabled"}
-              className={`block w-full bg-blue-800 rounded-lg p-3 text-white hover:bg-blue-900 transition ${
-                loading && "disabled:opacity-75"
-              }`}
-            >
-              {loading ? "LOADING..." : "LOGIN"}
-            </button>
-          </form>
-
-          <p className="mt-5 mb-5 justify-self-center">
-            Don't have account? Click{" "}
-            <Link
-              to={"/registration"}
-              className="text-blue-800 underline underline-offset-5 hover:text-blue-950"
-            >
-              here
-            </Link>{" "}
-            to registration
-          </p>
+      <div className="flex justify-center items-center bg-base-200 h-screen">
+        <div>
+          <div className="card bg-base-100 w-96 shadow-xl">
+            <form onSubmit={loginPost}>
+              <div className="card-body">
+                <div className="place-items-center mb-6">
+                  <h2 className="card-title text-3xl text-primary">LOGIN</h2>
+                </div>
+                <label htmlFor="email" className={`input input-bordered flex items-center gap-2 ${errors.email && 'input-error'}`}>
+                  <FontAwesomeIcon icon={faEnvelope} className={`mr-3 ${errors.email ? 'text-red-800' : 'text-primary'}`} />
+                  <input id="email" type="email" autoComplete="on" className="grow" placeholder="Email" onChange={(e) => setEmail(e.target.value)} value={email} />
+                </label>
+                <ErrorMessage message={errors.email} />
+                <label htmlFor="password" className={`input input-bordered flex items-center gap-2 ${errors.password && 'input-error'}`}>
+                  <FontAwesomeIcon icon={faLock} className={`mr-3 ${errors.password ? 'text-red-800' : 'text-primary'}`} />
+                  <input id="password" type="password" autoComplete="off" className="grow" placeholder="Password" onChange={(e) => setPassword(e.target.value)} value={password} />
+                </label>
+                <ErrorMessage message={errors.email} />
+                <ErrorAlert message={errors.error} />
+                <SuccessAlert message={successMessage} />
+                <button disabled={loading && 'disabled'} type="submit" className={`btn btn-primary w-full mt-3 ${loading && 'btn-active'}`}>{loading ? 'Loading...' : 'Login'}</button>
+              </div>
+            </form>
+          </div>
+          <div className="place-items-center">
+            <p className="mt-3">Don't have an account? klik <Link className="underline underline-offset-2 text-primary hover:text-purple-900" to={'/registration'}>here</Link> to registration</p>
+          </div>
         </div>
       </div>
     </>
   );
 }
-
-export default Login;
