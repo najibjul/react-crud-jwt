@@ -42,9 +42,9 @@ function Registration() {
 
   return (
     <>
-      <div className="flex justify-center items-center bg-base-200 h-screen">
+      <div className="flex justify-center items-center relative z-10 h-full w-full bg-cover">
         <div>
-          <div className="card bg-base-100 w-96 shadow-xl pb-6">
+          <div className="card bg-base-100 w-96 shadow-xl pb-6 my-2">
             <form onSubmit={registrationPost}>
               <div className="card-body">
                 <div className="place-items-center mb-6">

@@ -13,17 +13,8 @@ module.exports = withMT({
   plugins: [
     require('daisyui'),
   ],
+  daisyui: {
+    themes: ["light"],
+  },
   
 });
-
-// export default {
-//   content: [
-//     "./index.html",  // Ensure this is included to scan your index.html
-//     "./src/**/*.{js,jsx,ts,tsx}"  // Scan all React files (JSX/TSX)
-//   ],
-//   theme: {
-//     extend: {},
-//   },
-//   plugins: [],
-// }
-

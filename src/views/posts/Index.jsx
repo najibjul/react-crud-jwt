@@ -36,16 +36,22 @@ export default function PostIndex() {
 
     const [errors, setErrors] = useState([])
 
+    const [length, setLength] = useState(0)
+
+    const fileRef = useRef(null)
+
     const fetchData = async (url) => {
         try {
-            await axios.get(url).then((response) => {                
+            await axios.get(url).then((response) => {
+                fileRef.current.value = null;
+                setLength(response.data.data.total)                
                 setCurrent_page(response.data.data.current_page);
                 setPer_page(response.data.data.per_page);
                 setPosts(response.data.data.data);
                 setLinks(response.data.data.links);
             });
         } catch (error) {
-            console.log(error);
+            setErrors(error.response.data)
         }
     };
 
@@ -101,7 +107,7 @@ export default function PostIndex() {
 
         setTitle('')
         setContent('')
-        setImage('')
+        setImage(null)
 
         document.getElementById('modalCreate').showModal()
     }
@@ -210,12 +216,13 @@ export default function PostIndex() {
                                     ))}
                                 </tbody>
                             </table>
-
-                            <div className="join mt-3">
-                                {links.map(link => (
-                                    <button key={link.label} className={`join-item btn ${!link.url ? 'btn-disabled' : '' } ${link.active ? 'btn-active ' : '' }`} onClick={(e) => handleUrl(e, link.url)} dangerouslySetInnerHTML={{ __html: link.label }}></button>
-                                ))}
-                            </div>
+                            {length > 5 && (
+                                <div className="join mt-3">
+                                    {links.map(link => (
+                                        <button key={link.label} className={`join-item btn ${!link.url ? 'btn-disabled' : '' } ${link.active ? 'btn-active ' : '' }`} onClick={(e) => handleUrl(e, link.url)} dangerouslySetInnerHTML={{ __html: link.label }}></button>
+                                    ))}
+                                </div>
+                            )}
 
                             <dialog id="modalCreate" className="modal">
                                 <div className="modal-box">
@@ -237,7 +244,7 @@ export default function PostIndex() {
 
                                     <div className="mb-3">
                                         <label htmlFor="imageCreate">Image</label>
-                                        <input type="file" id="imageCreate" className="input input-bordered w-full" onChange={(e) => setImage(e.target.files[0])} />
+                                        <input ref={fileRef} type="file" id="imageCreate" className="input input-bordered w-full" onChange={(e) => setImage(e.target.files[0])} />
                                     </div>
 
                                     <div className="modal-action">
