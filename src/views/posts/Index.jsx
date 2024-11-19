@@ -38,7 +38,7 @@ export default function PostIndex() {
 
     const fetchData = async (url) => {
         try {
-            await axios.get(url).then((response) => {
+            await axios.get(url).then((response) => {                
                 setCurrent_page(response.data.data.current_page);
                 setPer_page(response.data.data.per_page);
                 setPosts(response.data.data.data);
@@ -62,26 +62,6 @@ export default function PostIndex() {
         e.preventDefault();
         setUrl(url);
         sectionRef.current.scrollIntoView({ behavior: "smooth" });
-    };
-
-    const handleDelete = async (e, id) => {
-        e.preventDefault();
-
-        try {
-            await axios
-                .delete(`http://127.0.0.1:8000/api/posts/${id}`)
-                .then((response) => {
-                    fetchData(url);
-
-                    const modalElement = document.getElementById(`post${id}`);
-                    const modal = bootstrap.Modal.getInstance(modalElement);
-                    modal.hide();
-
-                    setSuccessMessage(response.data.message);
-                });
-        } catch (error) {
-            console.log(error);
-        }
     };
 
     const handleModalEdit = async (e, id, title, content) => {
@@ -185,7 +165,7 @@ export default function PostIndex() {
                     <div className="card-body">
                         <SuccessAlert message={successMessage} />
                         <div className="overflow-x-auto">
-                            <table className="table">
+                            <table className="table" ref={sectionRef}>
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -230,6 +210,12 @@ export default function PostIndex() {
                                     ))}
                                 </tbody>
                             </table>
+
+                            <div className="join mt-3">
+                                {links.map(link => (
+                                    <button key={link.label} className={`join-item btn ${!link.url ? 'btn-disabled' : '' } ${link.active ? 'btn-active ' : '' }`} onClick={(e) => handleUrl(e, link.url)} dangerouslySetInnerHTML={{ __html: link.label }}></button>
+                                ))}
+                            </div>
 
                             <dialog id="modalCreate" className="modal">
                                 <div className="modal-box">
